@@ -109,6 +109,10 @@ Mongo Basic knowledge
    * 东方航空正在他们最关键的新一代机票搜索项目中使用MongoDB。根据东航的公开分享，他们MongoDB数据库总条数有数十亿，每天写入2600万次，查询4500万次，80%的查询低于50ms，CPU利用率小于30%，这些仅仅只是由一套3节点的复制集来提供。
    * 京东
    
+   8、sharding、replica set对并发的影响
+   
+   * 在sharding模式下每一个mongod实例都是独立于分片集群中其它实例的包括它的锁，一个mongod实例中的锁不会影响其它实例。 
+   * 在replica set模式下因为要保持primary、secondaries之间的同步，所以当在primary写入数据的时候MongoDB同步更新primary中的oplog（oplog是一个特殊的集合在local数据库中），因此MongoDB会同时锁住两个数据库以保证同步。
    
 ## MongoDB 设计模式与适应场景
 
@@ -321,7 +325,8 @@ Mongo Basic knowledge
 
    * 3.6、读写分离
    
-        因为主库和从库的同步延迟，如果应用能容忍延迟，最好是从库读，主库写
+        因为主库和从库的同步延迟，如果应用能容忍延迟，最好是从库读，主库写。
+        如果读写都在主节点的话，从节点就一直处在空置状态，这是一种浪费。对于报表或者搜索这种读操作来说完全可以在从节点实现，因此要做的是在 connection string 中设置成 secondarypreferred。
 
    * 3.7、使用最新的客户端连接库
    
