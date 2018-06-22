@@ -177,6 +177,7 @@ Mongo Basic knowledge
    1. 主从读写方案
 
    2. 副本集方案
+        * [可参考](https://www.cnblogs.com/wang726zq/p/6797751.html) (方案未验证)
    
 ## MongoDB 性能与优化
 
@@ -185,6 +186,8 @@ Mongo Basic knowledge
    2、并发查询的性能及优化
    
    3、热数据处理支持得程度
+   
+   * [以上问题性能限制可参考](http://www.thebigdata.cn/MongoDB/33119.html) (方案未验证)
    
    4、Mongodb是如何做到应对高并发高可用和数据负载均衡的呢？
 
