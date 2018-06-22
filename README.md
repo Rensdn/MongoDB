@@ -188,6 +188,9 @@ Mongo Basic knowledge
    3、热数据处理支持得程度
    
    * [以上问题性能限制可参考](http://www.thebigdata.cn/MongoDB/33119.html) (方案未验证)
+   ````
+   一百万注册用户并不算很多,4G内存,200G硬盘空间的MongoDB服务器即可轻松应对。性能瓶颈是硬盘IO,可以很容易的使用Raid和固态硬盘提升几倍的吞吐量。不使用大量的Js计算,CPU不会成为问题,不要让索引膨胀,内存不会成为问题。你根本用不着志强的一堆核心和海量的内存,更多的内存可以让缓存的效果更好一些,可是比读写分离还是差远了。如果是高并发时查询性能不足,就要采用读写分离的部署方式。当IO再次成为瓶颈时,就只能采用集群部署MongoDB启用分片功能,或者自行进行分集合与key散列的工作。
+   ````
    
    4、Mongodb是如何做到应对高并发高可用和数据负载均衡的呢？
 
@@ -216,6 +219,9 @@ Mongo Basic knowledge
    
    * 在sharding模式下每一个mongod实例都是独立于分片集群中其它实例的包括它的锁，一个mongod实例中的锁不会影响其它实例。 
    * 在replica set模式下因为要保持primary、secondaries之间的同步，所以当在primary写入数据的时候MongoDB同步更新primary中的oplog（oplog是一个特殊的集合在local数据库中），因此MongoDB会同时锁住两个数据库以保证同步。
+   
+   9、大规模运行MongoDB
+   * [参考](https://blog.csdn.net/liqfyiyi/article/details/50954660)
    
 ## MongoDB 设计模式与适应场景
 
@@ -462,7 +468,22 @@ Mongo Basic knowledge
    * 4.0、大量更新批量操作
     
         实际经验，如果一个集合有大量的upate或insert操作，那么与其一个个操作的去连接，不如汇聚到1000-5000条左右，一次性批量写入，可以有效减少锁的竞争情况，性能有显著提高。
-
+        
+   * 4.1、查询过滤
+        
+        FindOne({_id:xxx}).Items[3].ItemType这优雅的代码欺骗，这是非常慢的，他几乎谋杀所有的流量。
+        比如FindOne({_id:xxx},{Items:{"$slice":[3,1]}})，这和上面那条优雅的代码是完成同样功能，但是他消耗很少的流量
+        
+   * 4.2、精细的使用Update
+   
+        尽量不要暴力的Update一整个节点。虽然MangoDB的性能挺暴力的，IO性能极限约等于MongoDB性能，暴力的Update就会在占用流量的同时迎接IO的性能极限。
+        
+        比如Update({_id:xxx},{$set:{"Items.3.Item.Health":38}});
+        
+        除了创建节点时的Insert或者Save之外，所有的Update都应该使用修改器精细修改.
+        
+        至于一次修改和批量修改，MongoDB默认100ms flush一次(2.x),只要两次修改比较贴近,被一起保存的可能性很高。但是合并了肯定比不合并强，合并的修改肯定是一起保存。
+   
    4、结构设计和索引
    * 4.1、尽量把数据存成一个文档
    
