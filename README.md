@@ -99,6 +99,7 @@ Mongo Basic knowledge
    虽然这两极都因为各自的弱势而开始进化出另一极的一些特性，但是这些特性的增加也会消弱其本来具备的优势，比如Couchbase上的index的增加会逐步降低数据库的读写性能。
    
    以MongoDB与MySQL为例：
+   
    ![mongodb && mysql](./image/1.png)
    ![mongodb && mysql](./image/2.png)
    ![mongodb && mysql](./image/3.png)
