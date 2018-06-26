@@ -296,6 +296,10 @@ Mongo Basic knowledge
    2、并发查询的性能及优化
    
    3、热数据处理支持得程度
+  
+   * 这一点是SQL和nosql之间的巨大差距,将热数据存在内存相当于自带cache,可以通过wiredtigercache进行上限的调节,与memcache或redis做缓存时候调节相同,将命中和大小控制在合理范围。若wiredtigercache大小控制合理,此处内存性价比相当高。
+   * mongodb会将全部索引读入内存中,所以优化索引相当重要,如果可以做到索引恰好覆盖热数据为最佳。
+   * 重视oplog，oplog大小应定期调整，若oplog过小，对热数据部分将是灾难
    
    * [以上问题性能限制可参考](http://www.thebigdata.cn/MongoDB/33119.html) (方案未验证)
    ````
